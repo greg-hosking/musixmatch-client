@@ -1,0 +1,29 @@
+{
+  "name": "musixmatch-client",
+  "version": "0.0.0",
+  "description": "JavaScript client for MusixMatch API",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist",
+    "build:cjs": "babel src --out-dir dist/cjs --presets=@babel/preset-env --plugins=@babel/plugin-transform-modules-commonjs",
+    "build:esm": "babel src --out-dir dist/esm --presets=@babel/preset-env",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/greg-hosking/musixmatch-client.git"
+  },
+  "author": "Greg Hosking",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/greg-hosking/musixmatch-client/issues"
+  },
+  "homepage": "https://github.com/greg-hosking/musixmatch-client#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0"
+  }
+}
