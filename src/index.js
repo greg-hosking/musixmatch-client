@@ -1,4 +1,4 @@
-const Client = require("./client");
+const MusixmatchClient = require("./client");
 const { Album, Artist, Genre, Lyrics, Track } = require("./entities");
 
-module.exports = { Album, Artist, Client, Genre, Lyrics, Track };
+module.exports = { MusixmatchClient, Album, Artist, Genre, Lyrics, Track };
