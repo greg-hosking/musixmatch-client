@@ -1,6 +1,23 @@
+const { musixmatchFetch, MusixmatchValidator } = require("../utils");
+
 class Genre {
-    static async getAllGenres() {
-        // ...
+    static async getAllGenres({ apiKey } = {}) {
+        try {
+            MusixmatchValidator.validateApiKey(apiKey);
+            const data = await musixmatchFetch({
+                endpoint: "music.genres.get",
+                params: {
+                    apikey: apiKey,
+                },
+            });
+            const genres = data.message.body.music_genre_list.map((item) => {
+                return new Genre(item.music_genre);
+            });
+            return genres;
+        } catch (error) {
+            console.error(`(Genre.getAllGenres) ${error}`);
+            return [];
+        }
     }
 
     constructor({
