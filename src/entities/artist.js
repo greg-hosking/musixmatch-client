@@ -1,3 +1,4 @@
+const { DEFAULTS } = require("../constants");
 const {
     MusixmatchError,
     musixmatchFetch,
@@ -39,8 +40,8 @@ class Artist {
         musicbrainzId,
         groupByAlbumName,
         sortByReleaseDate,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         try {
             MusixmatchValidator.validateApiKey(apiKey);
@@ -92,8 +93,8 @@ class Artist {
         apiKey,
         id,
         musicbrainzId,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         try {
             MusixmatchValidator.validateApiKey(apiKey);
@@ -129,9 +130,9 @@ class Artist {
 
     static async getTopArtists({
         apiKey,
-        country = MusixmatchClient.DEFAULTS.COUNTRY,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        country = DEFAULTS.COUNTRY,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         try {
             MusixmatchValidator.validateApiKey(apiKey);
@@ -163,8 +164,8 @@ class Artist {
         query,
         idFilter,
         musicbrainzIdFilter,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     }) {
         try {
             MusixmatchValidator.validateApiKey(apiKey);
@@ -235,8 +236,8 @@ class Artist {
         apiKey,
         groupByAlbumName,
         sortByReleaseDate,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         return await Artist.getArtistAlbums({
             apiKey,
@@ -251,8 +252,8 @@ class Artist {
 
     async getRelatedArtists({
         apiKey,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         return await Artist.getRelatedArtists({
             apiKey,
