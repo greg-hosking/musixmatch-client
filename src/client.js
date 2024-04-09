@@ -14,20 +14,6 @@ class MusixmatchClient {
         this.API_KEY = apiKey;
     }
 
-    static async fetch({ endpoint, params = {}, method = "GET" } = {}) {
-        const queryParams = new URLSearchParams(params).toString();
-        const url = `${MusixmatchClient.BASE_URL}${endpoint}?${queryParams}`;
-
-        const response = await fetch(url, { method });
-        const data = await response.json();
-
-        const code = data?.message?.header?.status_code;
-        if (code === 200) {
-            return data;
-        }
-        throw new MusixmatchError(code);
-    }
-
     async getTopArtists({
         country = MusixmatchClient.DEFAULTS.COUNTRY,
         page = MusixmatchClient.DEFAULTS.PAGE,
