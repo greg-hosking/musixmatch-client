@@ -17,15 +17,15 @@ class MusixmatchValidator {
         }
     }
 
-    static validateBoolean(name, value, optional = true) {
+    static validateBoolean(name, value, optional = false) {
         if (optional && typeof value === "undefined") {
             return;
         }
         if ([true, "true", 1].includes(value)) {
-            return 1;
+            return true;
         }
         if ([false, "false", 0].includes(value)) {
-            return 0;
+            return false;
         }
         throw new MusixmatchError(
             400,
@@ -33,7 +33,7 @@ class MusixmatchValidator {
         );
     }
 
-    static validateOrder(name, value, optional = true) {
+    static validateOrder(name, value, optional = false) {
         if (optional && typeof value === "undefined") {
             return;
         }

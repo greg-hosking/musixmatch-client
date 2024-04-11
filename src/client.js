@@ -1,6 +1,12 @@
 const { CHARTS, COUNTRIES, DEFAULTS } = require("./constants");
-const { Album, Artist, Genre, Lyrics, Track } = require("./entities");
-const MusixmatchError = require("./utils/errors");
+const {
+    AlbumController,
+    ArtistController,
+    GenreController,
+    LyricsController,
+    TrackController,
+} = require("./controllers");
+const { MusixmatchError } = require("./utils");
 
 /**
  *
@@ -14,12 +20,12 @@ class MusixmatchClient {
         this.API_KEY = apiKey;
     }
 
-    async getTopArtists({
+    async getChartingArtists({
         country = MusixmatchClient.DEFAULTS.COUNTRY,
         page = MusixmatchClient.DEFAULTS.PAGE,
         pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
     } = {}) {
-        return await Artist.getTopArtists({
+        return await ArtistController.getChartingArtists({
             apiKey: this.API_KEY,
             country,
             page,
@@ -27,28 +33,44 @@ class MusixmatchClient {
         });
     }
 
-    async getTopTracks() {}
-
-    async searchTracks() {}
-
-    async getTrack() {}
-
-    async getTrackLyrics() {}
-
-    async getTrackLyricsMood() {}
-
-    async getTrackSnippet() {}
-
-    async getMusicGenres() {
-        return await Genre.getAllGenres({ apiKey: this.API_KEY });
+    async getChartingTracks() {
+        // TO DO
     }
 
-    async getMatchingTrackLyrics() {}
+    async searchTracks() {
+        // TO DO
+    }
 
-    async getMatchingTrack() {}
+    async getTrack() {
+        // TO DO
+    }
+
+    async getTrackLyrics() {
+        // TO DO
+    }
+
+    async getTrackLyricsMood() {
+        // TO DO
+    }
+
+    async getTrackSnippet() {
+        // TO DO
+    }
+
+    async getMusicGenres() {
+        return await GenreController.getAllGenres({ apiKey: this.API_KEY });
+    }
+
+    async getMatchingTrackLyrics() {
+        // TO DO
+    }
+
+    async getMatchingTrack() {
+        // TO DO
+    }
 
     async getArtist({ id, musicbrainzId } = {}) {
-        return await Artist.getArtist({
+        return await ArtistController.getArtistById({
             apiKey: this.API_KEY,
             id,
             musicbrainzId,
@@ -56,15 +78,15 @@ class MusixmatchClient {
     }
 
     async searchArtists({
-        query,
+        artist,
         idFilter,
         musicbrainzIdFilter,
         page = MusixmatchClient.DEFAULTS.PAGE,
         pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
     }) {
-        return await Artist.search({
+        return await ArtistController.search({
             apiKey: this.API_KEY,
-            query,
+            artist,
             idFilter,
             musicbrainzIdFilter,
             page,
@@ -75,12 +97,12 @@ class MusixmatchClient {
     async getArtistAlbums({
         id,
         musicbrainzId,
-        groupByAlbumName,
-        sortByReleaseDate,
+        groupByAlbumName = true,
+        sortByReleaseDate = "desc",
         page = MusixmatchClient.DEFAULTS.PAGE,
         pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
     } = {}) {
-        return await Artist.getArtistAlbums({
+        return await ArtistController.getAlbumsByArtistId({
             apiKey: this.API_KEY,
             id,
             musicbrainzId,
@@ -97,7 +119,7 @@ class MusixmatchClient {
         page = MusixmatchClient.DEFAULTS.PAGE,
         pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
     } = {}) {
-        return await Artist.getRelatedArtists({
+        return await ArtistController.getRelatedArtistsByArtistId({
             apiKey: this.API_KEY,
             id,
             musicbrainzId,
@@ -106,9 +128,29 @@ class MusixmatchClient {
         });
     }
 
-    async getAlbum() {}
+    async getAlbum({ id } = {}) {
+        return await AlbumController.getAlbumById({
+            apiKey: this.API_KEY,
+            id,
+        });
+    }
 
-    async getAlbumTracks() {}
+    async getAlbumTracks({
+        id,
+        musicbrainzId,
+        hasLyrics,
+        page = MusixmatchClient.DEFAULTS.PAGE,
+        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+    } = {}) {
+        return await AlbumController.getTracksByAlbumId({
+            apiKey: this.API_KEY,
+            id,
+            musicbrainzId,
+            hasLyrics,
+            page,
+            pageSize,
+        });
+    }
 
     /*********************************************************************/
     /* Endpoint-named methods matching the Musixmatch API conventions.   */
@@ -121,51 +163,43 @@ class MusixmatchClient {
         page = MusixmatchClient.DEFAULTS.PAGE,
         pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
     } = {}) {
-        return await this.getTopArtists({ country, page, pageSize });
+        return await this.getChartingArtists({ country, page, pageSize });
     }
 
-    async chartTracksGet() {}
-
-    async trackSearch() {}
-
-    async trackGet() {}
-
-    async trackLyricsGet() {}
-
-    async trackLyricsPost() {
-        throw new MusixmatchError(501);
+    async chartTracksGet() {
+        // TO DO
     }
 
-    async trackLyricsMoodGet() {}
-
-    async trackSnippetGet() {}
-
-    async trackSubtitleGet() {
-        throw new MusixmatchError(501);
+    async trackSearch() {
+        // TO DO
     }
 
-    async trackRichsyncGet() {
-        throw new MusixmatchError(501);
+    async trackGet() {
+        // TO DO
     }
 
-    async trackLyricsTranslationGet() {
-        throw new MusixmatchError(501);
+    async trackLyricsGet() {
+        // TO DO
     }
 
-    async trackSubtitleTranslationGet() {
-        throw new MusixmatchError(501);
+    async trackLyricsMoodGet() {
+        // TO DO
+    }
+
+    async trackSnippetGet() {
+        // TO DO
     }
 
     async musicGenresGet() {
         return await this.getMusicGenres();
     }
 
-    async matcherLyricsGet() {}
+    async matcherLyricsGet() {
+        // TO DO
+    }
 
-    async matcherTrackGet() {}
-
-    async matcherSubtitleGet() {
-        throw new MusixmatchError(501);
+    async matcherTrackGet() {
+        // TO DO
     }
 
     async artistGet({ id, musicbrainzId } = {}) {
@@ -220,10 +254,38 @@ class MusixmatchClient {
         });
     }
 
-    async albumGet() {}
+    async albumGet() {
+        // TO DO
+    }
 
-    async albumTracksGet() {}
+    async albumTracksGet() {
+        // TO DO
+    }
 
+    /*********/
+    /* TO DO */
+    /*********/
+    async trackLyricsPost() {
+        throw new MusixmatchError(501);
+    }
+    async trackSubtitleGet() {
+        throw new MusixmatchError(501);
+    }
+
+    async trackRichsyncGet() {
+        throw new MusixmatchError(501);
+    }
+
+    async trackLyricsTranslationGet() {
+        throw new MusixmatchError(501);
+    }
+
+    async trackSubtitleTranslationGet() {
+        throw new MusixmatchError(501);
+    }
+    async matcherSubtitleGet() {
+        throw new MusixmatchError(501);
+    }
     async trackingUrlGet() {
         throw new MusixmatchError(501);
     }
