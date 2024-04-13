@@ -115,14 +115,21 @@ class ArtistController {
                     "Missing required parameter(s): id or musicbrainzId"
                 );
             }
-            groupByAlbumName = MusixmatchValidator.validateBoolean(
-                "groupByAlbumName",
-                groupByAlbumName
-            );
-            sortByReleaseDate = MusixmatchValidator.validateOrder(
-                "sortByReleaseDate",
-                sortByReleaseDate
-            );
+            if (typeof groupByAlbumName !== "boolean") {
+                throw new MusixmatchError(
+                    400,
+                    "Invalid parameter: groupByAlbumName. The value must be a boolean."
+                );
+            }
+            if (
+                typeof sortByReleaseDate !== "string" ||
+                !["asc", "desc"].includes(sortByReleaseDate)
+            ) {
+                throw new MusixmatchError(
+                    400,
+                    `Invalid parameter: sortByReleaseDate. The value must be either "asc" or "desc".`
+                );
+            }
             MusixmatchValidator.validatePage(page);
             MusixmatchValidator.validatePageSize(pageSize);
 
@@ -139,23 +146,24 @@ class ArtistController {
                 endpoint: "artist.albums.get",
                 params: params,
             });
-            const albums = data?.message?.body.album_list
-                ?.filter((item) => item.album)
-                .map((item) => {
-                    return new Album(
-                        item.album,
-                        ArtistController.generateGetAlbumArtistFn({
-                            apiKey,
-                            id: item.album.artist_id,
-                            musicbrainzId: item.album.artist_mbid,
-                        }),
-                        AlbumController.generateGetTracksFn({
-                            apiKey,
-                            id: item.album.album_id,
-                            musicbrainzId: item.album.album_mbid,
-                        })
-                    );
-                });
+            const albums =
+                data?.message?.body.album_list
+                    ?.filter((item) => item.album)
+                    .map((item) => {
+                        return new Album(
+                            item.album,
+                            ArtistController.generateGetAlbumArtistFn({
+                                apiKey,
+                                id: item.album.artist_id,
+                                musicbrainzId: item.album.artist_mbid,
+                            }),
+                            AlbumController.generateGetTracksFn({
+                                apiKey,
+                                id: item.album.album_id,
+                                musicbrainzId: item.album.album_mbid,
+                            })
+                        );
+                    }) ?? [];
             return albums;
         } catch (error) {
             console.error(`(Artist.getAlbumsByArtistId) ${error}`);
@@ -192,19 +200,24 @@ class ArtistController {
                 endpoint: "artist.related.get",
                 params: params,
             });
-            const artists = data.message.body.artist_list.map((item) => {
-                const artistData = item.artist;
-                const options = {
-                    apiKey,
-                    id: artistData.artist_id,
-                    musicbrainzId: artistData.artist_mbid,
-                };
-                return new Artist(
-                    artistData,
-                    ArtistController.generateGetAlbumsFn(options),
-                    ArtistController.generateGetRelatedArtistsFn(options)
-                );
-            });
+            const artists =
+                data?.message?.body?.artist_list
+                    ?.filter((item) => item.artist)
+                    .map((item) => {
+                        const artistData = item.artist;
+                        const options = {
+                            apiKey,
+                            id: artistData.artist_id,
+                            musicbrainzId: artistData.artist_mbid,
+                        };
+                        return new Artist(
+                            artistData,
+                            ArtistController.generateGetAlbumsFn(options),
+                            ArtistController.generateGetRelatedArtistsFn(
+                                options
+                            )
+                        );
+                    }) ?? [];
             return artists;
         } catch (error) {
             console.error(
@@ -235,19 +248,24 @@ class ArtistController {
                     page_size: pageSize,
                 },
             });
-            const artists = data.message.body.artist_list.map((item) => {
-                const artistData = item.artist;
-                const options = {
-                    apiKey,
-                    id: artistData.artist_id,
-                    musicbrainzId: artistData.artist_mbid,
-                };
-                return new Artist(
-                    artistData,
-                    ArtistController.generateGetAlbumsFn(options),
-                    ArtistController.generateGetRelatedArtistsFn(options)
-                );
-            });
+            const artists =
+                data?.message?.body?.artist_list
+                    ?.filter((item) => item.artist)
+                    .map((item) => {
+                        const artistData = item.artist;
+                        const options = {
+                            apiKey,
+                            id: artistData.artist_id,
+                            musicbrainzId: artistData.artist_mbid,
+                        };
+                        return new Artist(
+                            artistData,
+                            ArtistController.generateGetAlbumsFn(options),
+                            ArtistController.generateGetRelatedArtistsFn(
+                                options
+                            )
+                        );
+                    }) ?? [];
             return artists;
         } catch (error) {
             console.error(`(ArtistController.getChartingArtists) ${error}`);
@@ -257,7 +275,7 @@ class ArtistController {
 
     static async search({
         apiKey,
-        artist,
+        artistName,
         idFilter,
         musicbrainzIdFilter,
         page = DEFAULTS.PAGE,
@@ -265,10 +283,10 @@ class ArtistController {
     }) {
         try {
             MusixmatchValidator.validateApiKey(apiKey);
-            if (!artist) {
+            if (typeof artistName !== "string") {
                 throw new MusixmatchError(
                     400,
-                    "Missing required parameter: artist"
+                    "Missing or invalid required parameter: artistName"
                 );
             }
             MusixmatchValidator.validatePage(page);
@@ -276,7 +294,7 @@ class ArtistController {
 
             let params = {
                 apikey: apiKey,
-                q_artist: artist,
+                q_artist: artistName,
                 page,
                 page_size: pageSize,
             };
@@ -291,19 +309,24 @@ class ArtistController {
                 endpoint: "artist.search",
                 params,
             });
-            const artists = data.message.body.artist_list.map((item) => {
-                const artistData = item.artist;
-                const options = {
-                    apiKey,
-                    id: artistData.artist_id,
-                    musicbrainzId: artistData.artist_mbid,
-                };
-                return new Artist(
-                    artistData,
-                    ArtistController.generateGetAlbumsFn(options),
-                    ArtistController.generateGetRelatedArtistsFn(options)
-                );
-            });
+            const artists =
+                data?.message?.body?.artist_list
+                    ?.filter((item) => item.artist)
+                    .map((item) => {
+                        const artistData = item.artist;
+                        const options = {
+                            apiKey,
+                            id: artistData.artist_id,
+                            musicbrainzId: artistData.artist_mbid,
+                        };
+                        return new Artist(
+                            artistData,
+                            ArtistController.generateGetAlbumsFn(options),
+                            ArtistController.generateGetRelatedArtistsFn(
+                                options
+                            )
+                        );
+                    }) ?? [];
             return artists;
         } catch (error) {
             console.error(`(ArtistController.search) ${error}`);
