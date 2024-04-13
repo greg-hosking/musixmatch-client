@@ -1,27 +1,23 @@
-class Lyrics {
+class Snippet {
     constructor({
-        lyrics_id,
+        snippet_language,
         restricted,
         instrumental,
-        lyrics_body,
-        lyrics_language,
+        snippet_body,
         script_tracking_url,
         pixel_tracking_url,
-        lyrics_copyright,
-        backlink_url,
+        html_tracking_url,
         updated_time,
     } = {}) {
-        this.id = lyrics_id;
+        this.language = snippet_language;
         this.isRestricted = restricted;
         this.isInstrumental = instrumental;
-        this.body = lyrics_body;
-        this.language = lyrics_language;
+        this.body = snippet_body;
         this.scriptTrackingUrl = script_tracking_url;
         this.pixelTrackingUrl = pixel_tracking_url;
-        this.copyright = lyrics_copyright;
-        this.backlinkUrl = backlink_url;
+        this.htmlTrackingUrl = html_tracking_url;
         this.updatedTime = updated_time;
     }
 }
 
-module.exports = Lyrics;
+module.exports = Snippet;

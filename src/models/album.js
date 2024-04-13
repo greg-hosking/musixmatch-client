@@ -60,7 +60,7 @@ class Album {
         this.pline = album_pline;
         this.copyright = album_copyright;
         this.label = album_label;
-        this.restricted = restricted;
+        this.isRestricted = restricted;
         this.updatedTime = updated_time;
         this.externalIds = external_ids
             ? {

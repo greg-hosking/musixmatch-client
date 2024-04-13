@@ -33,13 +33,15 @@ class Artist {
         this.musicbrainzId = artist_mbid;
         this.name = artist_name;
         this.nameTranslations =
-            artist_name_translation_list?.map((item) => {
-                return {
-                    language: item?.artist_name_translation?.language ?? "",
-                    translation:
-                        item?.artist_name_translation?.translation ?? "",
-                };
-            }) ?? [];
+            artist_name_translation_list
+                ?.filter((item) => item.artist_name_translation)
+                .map((item) => {
+                    return {
+                        language: item.artist_name_translation?.language ?? "",
+                        translation:
+                            item.artist_name_translation?.translation ?? "",
+                    };
+                }) ?? [];
         this.country = artist_country;
         this.aliases =
             artist_alias_list?.map((item) => {
