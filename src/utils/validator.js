@@ -17,42 +17,6 @@ class MusixmatchValidator {
         }
     }
 
-    static validateBoolean(name, value, optional = false) {
-        if (optional && typeof value === "undefined") {
-            return;
-        }
-        if ([true, "true", 1].includes(value)) {
-            return true;
-        }
-        if ([false, "false", 0].includes(value)) {
-            return false;
-        }
-        throw new MusixmatchError(
-            400,
-            `Invalid parameter: ${name}. The value must be a boolean, 'true', 'false', 0, or 1.`
-        );
-    }
-
-    static validateOrder(name, value, optional = false) {
-        if (optional && typeof value === "undefined") {
-            return;
-        }
-        if (typeof value !== "string" || !value.trim()) {
-            throw new MusixmatchError(
-                400,
-                `Invalid parameter: ${name}. The value must be a non-empty string.`
-            );
-        }
-        value = value.toLowerCase().trim();
-        if (!["asc", "desc"].includes(value)) {
-            throw new MusixmatchError(
-                400,
-                `Invalid parameter: ${name}. The value must be 'asc' or 'desc'.`
-            );
-        }
-        return value;
-    }
-
     static validateChart(chart) {
         if (!Object.values(CHARTS).includes(chart)) {
             throw new MusixmatchError(
