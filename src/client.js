@@ -1,16 +1,12 @@
 const { CHARTS, COUNTRIES, DEFAULTS } = require("./constants");
 const {
-    AlbumController,
-    ArtistController,
-    GenreController,
-    LyricsController,
-    TrackController,
-} = require("./controllers");
+    AlbumService,
+    ArtistService,
+    GenreService,
+    TrackService,
+} = require("./services");
 const { MusixmatchError } = require("./utils");
 
-/**
- *
- */
 class MusixmatchClient {
     static CHARTS = CHARTS;
     static COUNTRIES = COUNTRIES;
@@ -18,77 +14,144 @@ class MusixmatchClient {
 
     constructor(apiKey) {
         this.API_KEY = apiKey;
+        this.albumService = new AlbumService(this.API_KEY);
+        this.artistService = new ArtistService(this.API_KEY);
+        this.genreService = new GenreService(this.API_KEY);
+        this.trackService = new TrackService(this.API_KEY);
+        this.albumService.setArtistService(this.artistService);
+        this.albumService.setTrackService(this.trackService);
+        this.artistService.setAlbumService(this.albumService);
+        this.trackService.setAlbumService(this.albumService);
+        this.trackService.setArtistService(this.artistService);
     }
 
     async getChartingArtists({
-        country = MusixmatchClient.DEFAULTS.COUNTRY,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        country = DEFAULTS.COUNTRY,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
-        return await ArtistController.getChartingArtists({
-            apiKey: this.API_KEY,
+        return await this.artistService.getChartingArtists({
             country,
             page,
             pageSize,
         });
     }
 
-    async getChartingTracks() {
-        // TO DO
+    async getChartingTracks({
+        chart = DEFAULTS.CHART,
+        country = DEFAULTS.COUNTRY,
+        hasLyrics,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
+    } = {}) {
+        return await this.trackService.getChartingTracks({
+            chart,
+            country,
+            hasLyrics,
+            page,
+            pageSize,
+        });
     }
 
-    async searchTracks() {
-        // TO DO
+    async searchTracks({
+        trackQuery,
+        artistQuery,
+        lyricsQuery,
+        trackArtistQuery,
+        writerQuery,
+        query,
+        artistId,
+        musicGenreId,
+        lyricsLanguage,
+        hasLyrics,
+        minReleaseDate,
+        maxReleaseDate,
+        sortByArtistRating,
+        sortByTrackRating,
+        quorumFactor,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
+    } = {}) {
+        return await this.trackService.searchTracks({
+            trackQuery,
+            artistQuery,
+            lyricsQuery,
+            trackArtistQuery,
+            writerQuery,
+            query,
+            artistId,
+            musicGenreId,
+            lyricsLanguage,
+            hasLyrics,
+            minReleaseDate,
+            maxReleaseDate,
+            sortByArtistRating,
+            sortByTrackRating,
+            quorumFactor,
+            page,
+            pageSize,
+        });
     }
 
-    async getTrack() {
-        // TO DO
+    async getTrack({ commontrackId, trackIsrc } = {}) {
+        return await this.trackService.getTrackByCommontrackId({
+            commontrackId,
+            trackIsrc,
+        });
     }
 
-    async getTrackLyrics() {
-        // TO DO
+    async getTrackLyrics({ id, commontrackId } = {}) {
+        return await this.trackService.getLyricsByTrackId({
+            id,
+            commontrackId,
+        });
     }
 
-    async getTrackLyricsMood() {
-        // TO DO
+    async getTrackLyricsMood({ commontrackId, trackIsrc } = {}) {
+        return await this.trackService.getLyricsMoodByTrackId({
+            commontrackId,
+            trackIsrc,
+        });
     }
 
-    async getTrackSnippet() {
-        // TO DO
+    async getTrackSnippet({ id } = {}) {
+        return await this.trackService.getSnippetByTrackId({ id });
     }
 
     async getMusicGenres() {
-        return await GenreController.getAllGenres({ apiKey: this.API_KEY });
+        return await this.genreService.getAllGenres();
     }
 
-    async getMatchingTrackLyrics() {
-        // TO DO
+    async getMatchingTrackLyrics({ trackQuery, artistQuery, trackIsrc } = {}) {
+        return await this.trackService.getMatchingTrackLyrics({
+            trackQuery,
+            artistQuery,
+            trackIsrc,
+        });
     }
 
-    async getMatchingTrack() {
-        // TO DO
+    async getMatchingTrack({ trackQuery, artistQuery, albumQuery } = {}) {
+        return await this.trackService.getMatchingTrack({
+            trackQuery,
+            artistQuery,
+            albumQuery,
+        });
     }
 
     async getArtist({ id, musicbrainzId } = {}) {
-        return await ArtistController.getArtistById({
-            apiKey: this.API_KEY,
+        return await this.artistService.getArtistById({
             id,
             musicbrainzId,
         });
     }
 
     async searchArtists({
-        artist,
-        idFilter,
-        musicbrainzIdFilter,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        artistQuery,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     }) {
-        return await ArtistController.search({
-            apiKey: this.API_KEY,
-            artist,
-            idFilter,
-            musicbrainzIdFilter,
+        return await this.artistService.searchArtists({
+            artistQuery,
             page,
             pageSize,
         });
@@ -99,11 +162,10 @@ class MusixmatchClient {
         musicbrainzId,
         groupByAlbumName = true,
         sortByReleaseDate = "desc",
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
-        return await ArtistController.getAlbumsByArtistId({
-            apiKey: this.API_KEY,
+        return await this.albumService.getAlbumsByArtistId({
             id,
             musicbrainzId,
             groupByAlbumName,
@@ -116,11 +178,10 @@ class MusixmatchClient {
     async getRelatedArtists({
         id,
         musicbrainzId,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
-        return await ArtistController.getRelatedArtistsByArtistId({
-            apiKey: this.API_KEY,
+        return await this.artistService.getRelatedArtistsByArtistId({
             id,
             musicbrainzId,
             page,
@@ -129,8 +190,7 @@ class MusixmatchClient {
     }
 
     async getAlbum({ id } = {}) {
-        return await AlbumController.getAlbumById({
-            apiKey: this.API_KEY,
+        return await this.albumService.getAlbumById({
             id,
         });
     }
@@ -139,11 +199,10 @@ class MusixmatchClient {
         id,
         musicbrainzId,
         hasLyrics,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.page,
+        pageSize = DEFAULTS.pageSize,
     } = {}) {
-        return await AlbumController.getTracksByAlbumId({
-            apiKey: this.API_KEY,
+        return await this.trackService.getTracksByAlbumId({
             id,
             musicbrainzId,
             hasLyrics,
@@ -159,47 +218,103 @@ class MusixmatchClient {
     /*********************************************************************/
 
     async chartArtistsGet({
-        country = MusixmatchClient.DEFAULTS.COUNTRY,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        country = DEFAULTS.COUNTRY,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         return await this.getChartingArtists({ country, page, pageSize });
     }
 
-    async chartTracksGet() {
-        // TO DO
+    async chartTracksGet({
+        chart = DEFAULTS.CHART,
+        country = DEFAULTS.COUNTRY,
+        hasLyrics,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
+    } = {}) {
+        return await this.getChartingTracks({
+            chart,
+            country,
+            hasLyrics,
+            page,
+            pageSize,
+        });
     }
 
-    async trackSearch() {
-        // TO DO
+    async trackSearch({
+        trackQuery,
+        artistQuery,
+        lyricsQuery,
+        trackArtistQuery,
+        writerQuery,
+        query,
+        artistId,
+        musicGenreId,
+        lyricsLanguage,
+        hasLyrics,
+        minReleaseDate,
+        maxReleaseDate,
+        sortByArtistRating,
+        sortByTrackRating,
+        quorumFactor,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
+    } = {}) {
+        return await this.searchTracks({
+            trackQuery,
+            artistQuery,
+            lyricsQuery,
+            trackArtistQuery,
+            writerQuery,
+            query,
+            artistId,
+            musicGenreId,
+            lyricsLanguage,
+            hasLyrics,
+            minReleaseDate,
+            maxReleaseDate,
+            sortByArtistRating,
+            sortByTrackRating,
+            quorumFactor,
+            page,
+            pageSize,
+        });
     }
 
-    async trackGet() {
-        // TO DO
+    async trackGet({ commontrackId, trackIsrc } = {}) {
+        return await this.getTrack({ commontrackId, trackIsrc });
     }
 
-    async trackLyricsGet() {
-        // TO DO
+    async trackLyricsGet({ id, commontrackId } = {}) {
+        return await this.getTrackLyrics({ id, commontrackId });
     }
 
-    async trackLyricsMoodGet() {
-        // TO DO
+    async trackLyricsMoodGet({ commontrackId, trackIsrc } = {}) {
+        return await this.getTrackLyricsMood({ commontrackId, trackIsrc });
     }
 
-    async trackSnippetGet() {
-        // TO DO
+    async trackSnippetGet({ id } = {}) {
+        return await this.getTrackSnippet({ id });
     }
 
     async musicGenresGet() {
         return await this.getMusicGenres();
     }
 
-    async matcherLyricsGet() {
-        // TO DO
+    async matcherLyricsGet({ trackQuery, artistQuery, trackIsrc } = {}) {
+        return await this.getMatchingTrackLyrics({
+            trackQuery,
+            artistQuery,
+            trackIsrc,
+        });
     }
 
-    async matcherTrackGet() {
-        // TO DO
+    async matcherTrackGet({ trackQuery, artistQuery, albumQuery } = {}) {
+        return await this.getMatchingTrack({
+            trackQuery,
+            artistQuery,
+            albumQuery,
+        });
     }
 
     async artistGet({ id, musicbrainzId } = {}) {
@@ -207,16 +322,12 @@ class MusixmatchClient {
     }
 
     async artistSearch({
-        query,
-        idFilter,
-        musicbrainzIdFilter,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        artistQuery,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     }) {
         return await this.searchArtists({
-            query,
-            idFilter,
-            musicbrainzIdFilter,
+            artistQuery,
             page,
             pageSize,
         });
@@ -225,10 +336,10 @@ class MusixmatchClient {
     async artistAlbumsGet({
         id,
         musicbrainzId,
-        groupByAlbumName,
-        sortByReleaseDate,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        groupByAlbumName = true,
+        sortByReleaseDate = "desc",
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         return await this.getArtistAlbums({
             id,
@@ -243,8 +354,8 @@ class MusixmatchClient {
     async artistRelatedGet({
         id,
         musicbrainzId,
-        page = MusixmatchClient.DEFAULTS.PAGE,
-        pageSize = MusixmatchClient.DEFAULTS.PAGE_SIZE,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         return await this.getRelatedArtists({
             id,
@@ -254,12 +365,24 @@ class MusixmatchClient {
         });
     }
 
-    async albumGet() {
-        // TO DO
+    async albumGet({ id } = {}) {
+        return await this.getAlbum({ id });
     }
 
-    async albumTracksGet() {
-        // TO DO
+    async albumTracksGet({
+        id,
+        musicbrainzId,
+        hasLyrics,
+        page = DEFAULTS.page,
+        pageSize = DEFAULTS.pageSize,
+    } = {}) {
+        return await this.getAlbumTracks({
+            id,
+            musicbrainzId,
+            hasLyrics,
+            page,
+            pageSize,
+        });
     }
 
     /*********/
