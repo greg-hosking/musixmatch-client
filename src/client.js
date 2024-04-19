@@ -199,8 +199,8 @@ class MusixmatchClient {
         id,
         musicbrainzId,
         hasLyrics,
-        page = DEFAULTS.page,
-        pageSize = DEFAULTS.pageSize,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         return await this.trackService.getTracksByAlbumId({
             id,
@@ -373,8 +373,8 @@ class MusixmatchClient {
         id,
         musicbrainzId,
         hasLyrics,
-        page = DEFAULTS.page,
-        pageSize = DEFAULTS.pageSize,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         return await this.getAlbumTracks({
             id,

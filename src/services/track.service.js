@@ -289,8 +289,8 @@ class TrackService {
         id,
         musicbrainzId,
         hasLyrics,
-        page = DEFAULTS.page,
-        pageSize = DEFAULTS.pageSize,
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
     } = {}) {
         const self = this;
         try {
