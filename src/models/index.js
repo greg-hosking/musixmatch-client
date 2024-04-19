@@ -1,9 +1,9 @@
-const Album = require("./album");
-const Artist = require("./artist");
-const Genre = require("./genre");
-const Lyrics = require("./lyrics");
-const Snippet = require("./snippet");
-const Track = require("./track");
+const Album = require("./album.model");
+const Artist = require("./artist.model");
+const Genre = require("./genre.model");
+const Lyrics = require("./lyrics.model");
+const Snippet = require("./snippet.model");
+const Track = require("./track.model");
 
 module.exports = {
     Album,

@@ -1,4 +1,4 @@
-const Genre = require("./genre");
+const Genre = require("./genre.model");
 
 class Track {
     constructor(
