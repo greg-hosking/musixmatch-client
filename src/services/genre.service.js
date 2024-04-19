@@ -1,14 +1,17 @@
 const { Genre } = require("../models");
-const { musixmatchFetch, MusixmatchValidator } = require("../utils");
+const { musixmatchFetch } = require("../utils");
 
-class GenreController {
-    static async getAllGenres({ apiKey } = {}) {
+class GenreService {
+    constructor(apiKey) {
+        this.API_KEY = apiKey;
+    }
+
+    async getAllGenres() {
         try {
-            MusixmatchValidator.validateApiKey(apiKey);
             const data = await musixmatchFetch({
                 endpoint: "music.genres.get",
                 params: {
-                    apikey: apiKey,
+                    apikey: this.API_KEY,
                 },
             });
             const genres =
@@ -17,10 +20,10 @@ class GenreController {
                     .map((item) => new Genre(item.music_genre)) ?? [];
             return genres;
         } catch (error) {
-            console.error(`(GenreController.getAllGenres) ${error}`);
+            console.error(`(GenreService.getAllGenres) ${error}`);
             return [];
         }
     }
 }
 
-module.exports = GenreController;
+module.exports = GenreService;

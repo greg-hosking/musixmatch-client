@@ -1,3 +1,4 @@
+const { DEFAULTS } = require("../constants");
 const Genre = require("./genre.model");
 
 class Album {
@@ -21,22 +22,17 @@ class Album {
             updated_time,
             external_ids,
         } = {},
-        getArtistFn,
-        getTracksFn
+        artistService,
+        trackService
     ) {
         if (!album_id && !album_mbid) {
             throw new Error(
                 "(Album.constructor) Missing required parameter(s): album_id or album_mbid"
             );
         }
-        if (
-            !getArtistFn ||
-            typeof getArtistFn !== "function" ||
-            !getTracksFn ||
-            typeof getTracksFn !== "function"
-        ) {
+        if (!artistService || !trackService) {
             throw new Error(
-                "(Album.constructor) Missing required parameter(s): getArtistFn or getTracksFn"
+                "(Album.constructor) Missing required parameter(s): artistService or trackService"
             );
         }
 
@@ -69,8 +65,27 @@ class Album {
                   amazonMusic: external_ids.amazon_music || [],
               }
             : {};
-        this.getArtist = getArtistFn;
-        this.getTracks = getTracksFn;
+
+        this.artistService = artistService;
+        this.trackService = trackService;
+    }
+
+    async getArtist() {
+        return await this.artistService.getArtistById({ id: this.artistId });
+    }
+
+    async getTracks({
+        hasLyrics,
+        page = DEFAULTS.page,
+        pageSize = DEFAULTS.pageSize,
+    } = {}) {
+        return await this.trackService.getTracksByAlbumId({
+            id: this.id,
+            musicbrainzId: this.musicbrainzId,
+            hasLyrics,
+            page,
+            pageSize,
+        });
     }
 }
 

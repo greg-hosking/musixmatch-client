@@ -1,3 +1,5 @@
+const { DEFAULTS } = require("../constants");
+
 class Artist {
     constructor(
         {
@@ -10,22 +12,17 @@ class Artist {
             artist_rating,
             updated_time,
         } = {},
-        getAlbumsFn,
-        getRelatedArtistsFn
+        albumService,
+        artistService
     ) {
         if (!artist_id && !artist_mbid) {
             throw new Error(
                 "(Artist.constructor) Missing required parameter(s): artist_id or artist_mbid"
             );
         }
-        if (
-            !getAlbumsFn ||
-            typeof getAlbumsFn !== "function" ||
-            !getRelatedArtistsFn ||
-            typeof getRelatedArtistsFn !== "function"
-        ) {
+        if (!albumService || !artistService) {
             throw new Error(
-                "(Artist.constructor) Missing required parameter(s): getAlbumsFn or getRelatedArtistsFn"
+                "(Artist.constructor) Missing required parameter(s): albumService or artistService"
             );
         }
 
@@ -50,8 +47,36 @@ class Artist {
         this.rating = artist_rating;
         this.updatedTime = updated_time;
 
-        this.getAlbums = getAlbumsFn;
-        this.getRelatedArtists = getRelatedArtistsFn;
+        this.albumService = albumService;
+        this.artistService = artistService;
+    }
+
+    async getAlbums({
+        groupByAlbumName = true,
+        sortByReleaseDate = "desc",
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
+    } = {}) {
+        return await this.albumService.getAlbumsByArtistId({
+            id: this.id,
+            musicbrainzId: this.musicbrainzId,
+            groupByAlbumName,
+            sortByReleaseDate,
+            page,
+            pageSize,
+        });
+    }
+
+    async getRelatedArtists({
+        page = DEFAULTS.PAGE,
+        pageSize = DEFAULTS.PAGE_SIZE,
+    } = {}) {
+        return await this.artistService.getRelatedArtistsByArtistId({
+            id: this.id,
+            musicbrainzId: this.musicbrainzId,
+            page,
+            pageSize,
+        });
     }
 }
 
