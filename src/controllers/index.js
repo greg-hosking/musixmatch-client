@@ -1,8 +1,8 @@
-const AlbumController = require("./album");
-const ArtistController = require("./artist");
-const GenreController = require("./genre");
+const AlbumController = require("./album.controller");
+const ArtistController = require("./artist.controller");
+const GenreController = require("./genre.controller");
 const LyricsController = require("./lyrics");
-const TrackController = require("./track");
+const TrackController = require("./track.controller");
 
 module.exports = {
     AlbumController,

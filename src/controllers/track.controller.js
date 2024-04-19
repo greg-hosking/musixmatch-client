@@ -1,5 +1,5 @@
 const { DEFAULTS } = require("../constants");
-const { AlbumController, ArtistController } = require("../controllers");
+const { AlbumController, ArtistController } = require(".");
 const { Lyrics, Snippet, Track } = require("../models");
 const {
     musixmatchFetch,

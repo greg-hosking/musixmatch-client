@@ -1,5 +1,5 @@
 const { DEFAULTS } = require("../constants");
-const { AlbumController } = require("../controllers");
+const { AlbumController } = require(".");
 const { Album, Artist } = require("../models");
 const {
     MusixmatchError,
