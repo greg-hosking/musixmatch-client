@@ -32,6 +32,7 @@ class MusixmatchClient {
     // }
 
     createFetchFn() {
+        const apiKey = this.apiKey;
         return async ({
             endpoint,
             params = {},
@@ -43,7 +44,7 @@ class MusixmatchClient {
                     "Missing required parameter: endpoint. Value must be a non-empty string."
                 );
             }
-            params.apikey = this.apiKey;
+            params.apikey = apiKey;
             const queryParams = new URLSearchParams(params).toString();
             const url = `${MusixmatchClient.baseUrl}${endpoint}?${queryParams}`;
             const response = await fetch(url, { method });
