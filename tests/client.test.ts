@@ -1,5 +1,5 @@
 import { Chart, Country } from "../src/enums";
-import { MusixmatchClient } from "../src/client";
+import MusixmatchClient from "../src/client";
 
 describe("MusixmatchClient", () => {
     it("should construct with default values", () => {
