@@ -1,4 +1,4 @@
-import { Genre } from "../types/api.types";
+import { Genre } from "../types/genre.types";
 
 class GenreModel {
     id?: number;
