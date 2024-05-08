@@ -1,15 +1,9 @@
 import { GenreModel } from "../models";
-import { GenreListApiResponse } from "../types/api.types";
-import { FetchFunction } from "../types/common";
+import { GenreListApiResponse } from "../types/genre.types";
 import { MusixmatchError } from "../utils";
+import Service from "./service";
 
-class GenreService {
-    private fetch: FetchFunction;
-
-    constructor(fetch: FetchFunction) {
-        this.fetch = fetch;
-    }
-
+class GenreService extends Service {
     async getAllGenres(): Promise<GenreModel[]> {
         try {
             const data: GenreListApiResponse = await this.fetch({

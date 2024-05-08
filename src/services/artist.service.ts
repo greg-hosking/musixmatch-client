@@ -6,6 +6,8 @@
 //     MusixmatchValidator,
 // } = require("../utils");
 
+import Service from "./service";
+
 // class ArtistService {
 //     constructor(apiKey) {
 //         this.API_KEY = apiKey;
@@ -169,3 +171,7 @@
 // }
 
 // module.exports = ArtistService;
+
+class ArtistService extends Service {}
+
+export default ArtistService;

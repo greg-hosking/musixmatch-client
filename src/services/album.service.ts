@@ -6,6 +6,8 @@
 //     MusixmatchError,
 // } = require("../utils");
 
+import Service from "./service";
+
 // class AlbumService {
 //     constructor(apiKey) {
 //         this.API_KEY = apiKey;
@@ -112,3 +114,7 @@
 // }
 
 // module.exports = AlbumService;
+
+class AlbumService extends Service {}
+
+export default AlbumService;
