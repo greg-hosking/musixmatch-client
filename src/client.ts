@@ -1,20 +1,42 @@
 import { Chart, Country } from "./enums";
+import {
+    AlbumService,
+    ArtistService,
+    GenreService,
+    TrackService,
+} from "./services";
+import {
+    FetchFunction,
+    FetchOptions,
+    Defaults,
+    DefaultOverrideOptions,
+} from "./types/common";
 import { MusixmatchError } from "./utils/error";
-import { FetchOptions } from "./types/common";
-import GenreService from "./services/genre.service";
 
-type Defaults = {
-    chart: Chart;
-    country: Country;
-    page: number;
-    pageSize: number;
-};
-
-type DefaultOverrideOptions = {
-    chart?: Chart;
-    country?: Country;
-    pageSize?: number;
-};
+function createFetchFn(apiKey: string): FetchFunction {
+    return async ({
+        endpoint,
+        params = {},
+        method = "GET",
+    }: FetchOptions = {}): Promise<any> => {
+        if (typeof endpoint !== "string" || !endpoint.length) {
+            throw new MusixmatchError(
+                400,
+                "Missing required parameter: endpoint. Value must be a non-empty string."
+            );
+        }
+        params.apikey = apiKey;
+        const queryParams = new URLSearchParams(params).toString();
+        const url = `${MusixmatchClient.baseUrl}${endpoint}?${queryParams}`;
+        const response = await fetch(url, { method });
+        const data = await response.json();
+        const code = data?.message?.header?.status_code;
+        if (code !== 200) {
+            throw new MusixmatchError(code);
+        }
+        return data;
+    };
+}
 
 class MusixmatchClient {
     static readonly Chart = Chart;
@@ -22,40 +44,10 @@ class MusixmatchClient {
     static readonly baseUrl = "https://api.musixmatch.com/ws/1.1/";
     apiKey: string;
     defaults: Defaults;
-    // albumService: AlbumService;
-    // artistService: ArtistService;
+    albumService: AlbumService;
+    artistService: ArtistService;
     genreService: GenreService;
-    // trackService: TrackService;
-
-    // createError(code: number, message?: string): MusixmatchError {
-    //     return new MusixmatchError(code, message);
-    // }
-
-    createFetchFn() {
-        const apiKey = this.apiKey;
-        return async ({
-            endpoint,
-            params = {},
-            method = "GET",
-        }: FetchOptions = {}): Promise<any> => {
-            if (typeof endpoint !== "string" || !endpoint.length) {
-                throw new MusixmatchError(
-                    400,
-                    "Missing required parameter: endpoint. Value must be a non-empty string."
-                );
-            }
-            params.apikey = apiKey;
-            const queryParams = new URLSearchParams(params).toString();
-            const url = `${MusixmatchClient.baseUrl}${endpoint}?${queryParams}`;
-            const response = await fetch(url, { method });
-            const data = await response.json();
-            const code = data?.message?.header?.status_code;
-            if (code !== 200) {
-                throw new MusixmatchError(code);
-            }
-            return data;
-        };
-    }
+    trackService: TrackService;
 
     constructor(
         apiKey: string,
@@ -89,8 +81,6 @@ class MusixmatchClient {
             );
         }
         this.apiKey = apiKey;
-        console.log("constructor this", this);
-
         this.defaults = {
             chart,
             country,
@@ -98,22 +88,12 @@ class MusixmatchClient {
             pageSize,
         };
 
-        // this.albumService = new AlbumService(
-        //     this.fetch,
-        //     this.defaults,
-        //     this.createError
-        // );
-        // this.artistService = new ArtistService(
-        //     this.fetch,
-        //     this.defaults,
-        //     this.createError
-        // );
-        this.genreService = new GenreService(this.createFetchFn());
-        // this.trackService = new TrackService(
-        //     this.fetch,
-        //     this.defaults,
-        //     this.createError
-        // );
+        const fetchFn = createFetchFn(this.apiKey);
+
+        this.albumService = new AlbumService(fetchFn);
+        this.artistService = new ArtistService(fetchFn);
+        this.genreService = new GenreService(fetchFn);
+        this.trackService = new TrackService(fetchFn);
         // this.albumService.setArtistService(this.artistService);
         // this.albumService.setTrackService(this.trackService);
         // this.artistService.setAlbumService(this.albumService);
@@ -214,9 +194,9 @@ class MusixmatchClient {
     //     return await this.trackService.getSnippetByTrackId({ id });
     // }
 
-    // async getMusicGenres() {
-    //     return await this.genreService.getAllGenres();
-    // }
+    async getMusicGenres() {
+        return await this.genreService.getAllGenres();
+    }
 
     // async getMatchingTrackLyrics({ trackQuery, artistQuery, trackIsrc } = {}) {
     //     return await this.trackService.getMatchingTrackLyrics({
@@ -393,9 +373,9 @@ class MusixmatchClient {
     //     return await this.getTrackSnippet({ id });
     // }
 
-    // async musicGenresGet() {
-    //     return await this.getMusicGenres();
-    // }
+    async musicGenresGet() {
+        return await this.genreService.getAllGenres();
+    }
 
     // async matcherLyricsGet({ trackQuery, artistQuery, trackIsrc } = {}) {
     //     return await this.getMatchingTrackLyrics({
@@ -481,45 +461,45 @@ class MusixmatchClient {
     //     });
     // }
 
-    // /*********/
-    // /* TO DO */
-    // /*********/
-    // async trackLyricsPost() {
-    //     throw new MusixmatchError(501);
-    // }
-    // async trackSubtitleGet() {
-    //     throw new MusixmatchError(501);
-    // }
+    /*********/
+    /* TO DO */
+    /*********/
+    async trackLyricsPost(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
+    async trackSubtitleGet(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
 
-    // async trackRichsyncGet() {
-    //     throw new MusixmatchError(501);
-    // }
+    async trackRichsyncGet(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
 
-    // async trackLyricsTranslationGet() {
-    //     throw new MusixmatchError(501);
-    // }
+    async trackLyricsTranslationGet(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
 
-    // async trackSubtitleTranslationGet() {
-    //     throw new MusixmatchError(501);
-    // }
-    // async matcherSubtitleGet() {
-    //     throw new MusixmatchError(501);
-    // }
-    // async trackingUrlGet() {
-    //     throw new MusixmatchError(501);
-    // }
+    async trackSubtitleTranslationGet(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
+    async matcherSubtitleGet(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
+    async trackingUrlGet(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
 
-    // async catalogueDumpGet() {
-    //     throw new MusixmatchError(501);
-    // }
+    async catalogueDumpGet(): Promise<void> {
+        throw new MusixmatchError(501);
+    }
 
-    // async workPost() {
-    //     throw new MusixmatchError(501);
-    // }
+    async workPost() {
+        throw new MusixmatchError(501);
+    }
 
-    // async workValidityPost() {
-    //     throw new MusixmatchError(501);
-    // }
+    async workValidityPost() {
+        throw new MusixmatchError(501);
+    }
 }
 
 export default MusixmatchClient;
