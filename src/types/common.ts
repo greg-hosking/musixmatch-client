@@ -1,5 +1,17 @@
 import { Chart, Country } from "../enums";
-import { MusixmatchError } from "../utils";
+
+export type Defaults = {
+    chart: Chart;
+    country: Country;
+    page: number;
+    pageSize: number;
+};
+
+export type DefaultOverrideOptions = {
+    chart?: Chart;
+    country?: Country;
+    pageSize?: number;
+};
 
 export type FetchOptions = {
     endpoint?: string;
@@ -12,15 +24,3 @@ export type FetchFunction = ({
     params,
     method,
 }: FetchOptions) => Promise<any>;
-
-export type Defaults = {
-    chart: Chart;
-    country: Country;
-    page: number;
-    pageSize: number;
-};
-
-export type CreateErrorFunction = (
-    code: number,
-    message?: string
-) => MusixmatchError;
